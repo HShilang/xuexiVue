@@ -1,30 +1,19 @@
 <template>
   <div id="root">
-    <h1 v-text="msg" ref="title"></h1>
-    <button @click="showDom">点我输出上方的DOM</button>
-    <school ref="sch"></school>
+    <student name="李四" sex="女" :age="18"/>
+    <student name="王五" />
   </div>
 </template>
-
 <script>
 //引入school组件
-import school from "@/components/School";
+import student from "@/components/Student";
 
 export default {
   name: "App",
-  data(){
-    return{
-      msg:'努力学习'
-    }
-  },
   components: {
-    school
+    student
   },
-  methods:{
-    showDom(){
-      console.log(this.$refs.sch)
-    }
-  }
+  methods:{}
 }
 </script>
 

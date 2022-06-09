@@ -8,7 +8,7 @@
 
 <script>
 //引入school组件
-import school from "@/components/School";
+import school from "@/components/Student";
 
 export default {
   name: "App",
