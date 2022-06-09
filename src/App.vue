@@ -7,13 +7,15 @@
 </template>
 <script>
 //引入school组件
-import school from "@/components/Schools";
-import student from "@/components/Student";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import Item from "@/components/Item";
+import List from "@/components/List";
 
 export default {
   name: "App",
   components: {
-    student,school
+    Footer,Header,Item,List
   },
   methods:{}
 }
