@@ -15,6 +15,7 @@ export default {
   name: "School",
   data() {
     return {
+      msg:'哈哈哈',
       name: '大连东软',
       address: '大连'
     }

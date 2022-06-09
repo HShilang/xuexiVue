@@ -13,6 +13,7 @@ export default {
   name: "School",
   data() {
     return {
+      msg:'123',
       name: '努力学习',
       sex: '男'
     }
