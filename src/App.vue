@@ -7,8 +7,8 @@
 </template>
 <script>
 //引入school组件
+import school from "@/components/Schools";
 import student from "@/components/Student";
-import school from "@/components/School";
 
 export default {
   name: "App",
@@ -19,6 +19,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.title{
+  color: #bbffaa;
+}
 </style>

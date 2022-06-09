@@ -1,6 +1,6 @@
 <template>
-  <div class="school">
-    <h1>{{ msg }}</h1>
+  <div class="student">
+    <h1 class="title">{{ msg }}</h1>
     <h2>
       学校名称：{{ name }}
       学校地址:{{ address }}
@@ -23,8 +23,11 @@ export default {
 }
 </script>
 
-<style scoped>
-.school {
-  background-color: gray;
+<style lang="less">
+.student {
+  .test{
+    font-size: 40px;
+  }
+  background-color: gold;
 }
 </style>

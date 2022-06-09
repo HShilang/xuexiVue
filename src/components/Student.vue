@@ -1,7 +1,7 @@
 <template>
-  <div class="school">
+  <div class="student">
     <h1>{{ msg }}</h1>
-    <h2>
+    <h2 class="test">
       学生姓名：{{ name }}
       学生性别:{{ sex }}
     </h2>
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style scoped>
-.school {
+.student {
   background-color: gray;
 }
 </style>
