@@ -2,19 +2,21 @@
   <div class="school">
     <h1>{{ msg }}</h1>
     <h2>
-      学生姓名：{{ name }}
-      学生性别:{{ sex }}
+      学校名称：{{ name }}
+      学校地址:{{ address }}
     </h2>
   </div>
 </template>
 
 <script>
+//引入混合
+
 export default {
   name: "School",
   data() {
     return {
-      name: '努力学习',
-      sex: '男'
+      name: '大连东软',
+      address: '大连'
     }
   },
 }
