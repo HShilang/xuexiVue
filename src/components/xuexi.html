@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <!-- 示例样式 -->
+    <link href="https://map-dev.sgcc.com.cn/products/js-sdk/v3/assets/css/demo.css" rel="stylesheet"/>
+    <title>画图工具——画线带箭头</title>
+    <style>
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .btn {
+            margin-right: 1rem;
+        }
+
+        .btn:last-child {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body id="body">
+<div id="map" style="width: 100%; height: 100%"></div>
+<div class="input-card" style="width: 22rem">
+    <h4>画线事件</h4>
+    <div class="input-item">
+        <button onclick="draw('path')" class="btn">折线</button>
+        <button onclick="draw('bezier')" class="btn">曲线</button>
+        <button onclick="draw('swallow-tail')" class="btn">燕尾</button>
+        <button onclick="clearData()" class="btn">清空</button>
+    </div>
+</div>
+<script src="https://map.sgcc.com.cn/maps?v=3.0.0"></script>
+<!-- 示例js -->
+<script src="https://map.sgcc.com.cn/products/js-sdk/v3/assets/js/jquery-1.11.1.min.js"></script>
+<script src="https://map.sgcc.com.cn/products/js-sdk/v3/assets/js/demo.js"></script>
+<script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+<script>
+    SGMap.tokenTask
+        .login(
+            "4b9985a37eef391f9ff32c696819f605",
+            "ee7b92c92455300896b732377a662077"
+        ).then(function () {
+        SGMap.plugin(["SGMap.DrawPolylineHandler"]).then(function (res) {
+            initMap();
+        });
+    });
+
+    var map, drawPolyline, lineFeatures;
+    var currentModel = 'path';
+
+    function initMap() {
+        map = new SGMap.Map({
+            container: "map",
+            style: "aegis://styles/aegis/Streets",
+            zoom: 5,
+            center: [117.21021591771557, 39.1],
+            localIdeographFontFamily: "Microsoft YoHei",
+            transition: {
+                duration: 0,
+                delay: 0
+            }
+        });
+
+        map.on("load", function (e) {
+            init();
+            map.addSource("drawToolsData", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: []
+                }
+            });
+
+            map.addLayer({
+                id: "draw-line",
+                type: "line",
+                source: "drawToolsData",
+                layout: {
+                    "line-cap": "round",
+                    "line-join": "round"
+                },
+                paint: {
+                    "line-color": "#3b89ca",
+                    "line-width": 5
+                }
+            });
+
+            /*map.addLayer({
+                id: "draw-polygon",
+                type: "fill",
+                source: "drawToolsData",
+                paint: {
+                    "fill-color": "#3b89ca",
+                    "fill-opacity": 0.5
+                }
+            });*/
+        });
+    }
+
+    // 开始画线
+    function draw(model) {
+        currentModel = model;
+        if (drawPolyline) {
+            drawPolyline.startDraw();
+        } else {
+            log.error("请先初始化实例！");
+        }
+    }
+
+    // 删除所有画点数据，编辑状态下则删除当前编辑的数据
+    function clearData() {
+        if (drawPolyline) {
+            drawPolyline.clearData();
+            clearDrawToolsLayer();
+        }
+    }
+
+    function init() {
+        drawPolyline = new SGMap.DrawPolylineHandler({
+            map: map,
+            enableEdit: false,
+            style: {
+                polyline: {
+                    "line-color": 'rgba(0,0,0,0)'
+                }
+            }
+        });
+
+        lineFeatures = [];
+
+        // 画线结束
+        drawPolyline.on("draw.polyline.end", function (data) {
+            let line = data.features[data.features.length - 1].geometry;
+            if (currentModel === "path") {
+                addPathArrowLine(line);
+            } else if (currentModel === "bezier") {
+                addBezierArrowLine(line);
+            } else if (currentModel === "swallow-tail") {
+                addSwallowTail(line);
+            }
+        });
+    }
+
+    /**
+     * 贝塞尔曲线 加 末端箭头
+     * @param line
+     */
+    function addBezierArrowLine(geometry) {
+        let line = turf.bezierSpline(geometry);
+        lineFeatures.push(line);
+        let arrow = createArrow(line, 150)
+        lineFeatures.push(arrow);
+        map.getSource("drawToolsData").setData({
+            type: "FeatureCollection",
+            features: lineFeatures
+        });
+    }
+
+    /**
+     * 折线段 末端加箭头
+     */
+    function addPathArrowLine(geometry) {
+        let line = {
+            type: 'Feature',
+            geometry: geometry
+        }
+        lineFeatures.push(line);
+        let arrow = createArrow(line, 150)
+        lineFeatures.push(arrow);
+        map.getSource("drawToolsData").setData({
+            type: "FeatureCollection",
+            features: lineFeatures
+        });
+    }
+
+    /**
+     * 燕尾图
+     * @param line
+     */
+    function addSwallowTail(geometry) {
+        /*let pivot = line.geometry.coordinates[0];
+        let distance = turf.length(line, {units: 'miles'});
+
+        let rotateLine = turf.transformRotate(line, 5, {pivot: pivot});
+
+        let line1 =createArrow(rotateLine,90)
+        let line2 =createArrow(line,-90)
+
+        let pt1 = turf.point(line1.geometry.coordinates[line1.geometry.coordinates.length-1]);
+        let pt2 = turf.point(line2.geometry.coordinates[line2.geometry.coordinates.length-1]);
+        let midPoint = turf.midpoint(pt1,pt2);
+        let angle = turf.rhumbBearing(pt1,pt2);
+        let newPoint = turf.rhumbDestination(midPoint,distance*0.2,angle+90,{units:'miles'});
+        let shortLine = turf.lineString([line1.geometry.coordinates[line1.geometry.coordinates.length-1],newPoint.geometry.coordinates]);
+        let shortLine2 = turf.lineString([line2.geometry.coordinates[line2.geometry.coordinates.length-1],newPoint.geometry.coordinates]);
+
+        let coordinates=[];
+
+        coordinates=coordinates.concat(line.geometry.coordinates);
+        coordinates=coordinates.concat(line2.geometry.coordinates);
+        coordinates=coordinates.concat(shortLine2.geometry.coordinates);
+
+        coordinates=coordinates.concat(shortLine.geometry.coordinates.reverse());
+        coordinates=coordinates.concat(line1.geometry.coordinates.reverse());
+        coordinates=coordinates.concat(rotateLine.geometry.coordinates.reverse());
+
+        let polygon = {
+            type: "Feature",
+            geometry: {
+                type: "Polygon",
+                coordinates: [coordinates]
+            }
+        };
+
+        lineFeatures.push(polygon);*/
+
+        map.getSource("drawToolsData").setData({
+            type: "FeatureCollection",
+            features: lineFeatures
+        });
+    }
+
+    /**
+     * 创建箭头的一侧边线段
+     * @param line
+     * @param deltaAngle
+     * @returns {*}
+     */
+    function createArrow(line, deltaAngle) {
+        //曲线长度
+        let distance = turf.length(line, {units: 'miles'});
+        let size = line.geometry.coordinates.length;
+        let prePoint = turf.point(line.geometry.coordinates[size - 2]);
+        let endPoint = turf.point(line.geometry.coordinates[size - 1]);
+
+        //相邻两个点的夹角
+        let angle = turf.rhumbBearing(prePoint, endPoint);
+        let angle1 = deltaAngle;
+        let angle2 = (-1) * deltaAngle;
+
+        let pt1 = turf.rhumbDestination(endPoint, distance * 0.1, angle + angle1, {units: 'miles'});
+        let pt2 = turf.rhumbDestination(endPoint, distance * 0.1, angle + angle2, {units: 'miles'});
+        return turf.lineString([pt1.geometry.coordinates, endPoint.geometry.coordinates, pt2.geometry.coordinates]);
+    }
+
+    function removeTool() {
+        if (drawPolyline) {
+            drawPolyline.remove();
+            drawPolyline = null;
+            clearDrawToolsLayer();
+            log.info("已删除实例！");
+        }
+    }
+
+    function clearDrawToolsLayer() {
+        lineFeatures = [];
+        map.getSource("drawToolsData").setData({
+            type: "FeatureCollection",
+            features: lineFeatures
+        });
+    }
+</script>
+</body>
+</html>
