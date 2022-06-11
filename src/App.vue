@@ -2,10 +2,10 @@
   <div id="root">
     <div className="todo-container">
       <div className="todo-wrap">
-        <MyHeader :addTodo="addTodo"/>
-        <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo"/>
-        <MyFooter :todos="todos" :checkAllTodo="checkAllTodo" :clearAllTodo="clearAllTodo"/>
-        <sss></sss>
+<!--        <MyHeader :addTodo="addTodo"/>-->
+<!--        <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo"/>-->
+<!--        <MyFooter :todos="todos" :checkAllTodo="checkAllTodo" :clearAllTodo="clearAllTodo"/>-->
+<!--        <basic></basic>-->
       </div>
     </div>
   </div>
@@ -15,11 +15,11 @@
 import MyHeader from './components/MyHeader'
 import MyList from './components/MyList'
 import MyFooter from './components/MyFooter.vue'
-import sss from "@/components/sss";
+import basic from "@/components/basic";
 
 export default {
   name: 'App',
-  components: {MyHeader, MyList, MyFooter, sss},
+  components: {MyHeader, MyList, MyFooter, basic},
   data() {
     return {
       //由于todos是MyHeader组件和MyFooter组件都在使用，所以放在App中（状态提升）

@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: "sss",
+  name: "basic",
   data() {
     return {
       a: 1,

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.0.0-alpha.1/axios.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <div>
+        筛选类型:
+        <input type="radio" value="不限" v-model="nowType">不限
+        <input type="radio" value="射手" v-model="nowType">射手
+        <input type="radio" value="刺客" v-model="nowType">刺客
+        <input type="radio" value="战士" v-model="nowType">战士
+        <input type="radio" value="法师" v-model="nowType">法师
+        <input type="radio" value="辅助" v-model="nowType">辅助
+        <input type="radio" value="坦克" v-model="nowType">坦克
+    </div>
+    <div>
+        筛选难度:
+        <input type="radio" value="不限" v-model="nowDiff">不限
+        <input type="radio" value="简单" v-model="nowDiff">简单
+        <input type="radio" value="中等" v-model="nowDiff">中等
+        <input type="radio" value="困难" v-model="nowDiff">困难
+    </div>
+    <div class="hero"
+         :class="{mask:
+         nowType!=='不限'&&(item.hero_type!==nowType)||
+         nowDiff!=='不限'&&(item.difficulty!==nowDiff)}"
+         v-for="item in heroArr"
+         :key="item.id">
+        <img :src="'http://www.zkt-it.com:5050/images/wzry/'+item.id+'.jpg'">
+        <p>
+            {{ item.cname }}
+        </p>
+        <p>
+            {{ item.difficulty }}
+        </p>
+        <p>
+            {{ item.hero_type }}
+        </p>
+    </div>
+</div>
+</body>
+<style>
+    .mask::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(1, 5, 0, 0.82);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    .hero {
+        position: relative;
+        float: left;
+        width: 100px;
+        height: 180px;
+        border: 1px white solid;
+        margin: 20px;
+        text-align: center;
+    }
+
+    .hero img {
+        width: 100px;
+        height: 100px;
+    }
+</style>
+<script>
+    Vue.config.productionTip = false;
+    new Vue({
+        el: '#app',
+        async created() {
+            const data = await axios.get('http://www.zkt-it.com:5050/wzry/')
+            console.log(data.data)
+            this.heroArr = data.data
+        },
+        data() {
+            return {
+                heroArr: [],
+                nowType: '不限',
+                nowDiff: '不限'
+            }
+        }
+    })
+</script>
+</html>
