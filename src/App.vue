@@ -5,6 +5,7 @@
         <MyHeader :addTodo="addTodo"/>
         <MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo"/>
         <MyFooter :todos="todos" :checkAllTodo="checkAllTodo" :clearAllTodo="clearAllTodo"/>
+        <sss></sss>
       </div>
     </div>
   </div>
@@ -14,10 +15,11 @@
 import MyHeader from './components/MyHeader'
 import MyList from './components/MyList'
 import MyFooter from './components/MyFooter.vue'
+import sss from "@/components/sss";
 
 export default {
   name: 'App',
-  components: {MyHeader, MyList, MyFooter},
+  components: {MyHeader, MyList, MyFooter, sss},
   data() {
     return {
       //由于todos是MyHeader组件和MyFooter组件都在使用，所以放在App中（状态提升）
