@@ -20,7 +20,7 @@ export default {
   methods:{
     sendStudentName(){
       //测试Student实例身上的时间
-      this.$emit('getStudentName',this.studentName)
+      this.$emit('getStudentName',this.studentName,666,888,999)
     }
   }
 }

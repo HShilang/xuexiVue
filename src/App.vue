@@ -2,7 +2,8 @@
   <div id="root">
     <h1>{{ msg }}</h1>
     <school :getSchoolName="getSchoolName"></school>
-    <student v-on:getStudentName="getStudentName"></student>
+<!--        <student v-on:test="getStudentName"></student>-->
+    <student ref="student"></student>
   </div>
 </template>
 
@@ -24,12 +25,15 @@ export default {
 
   methods: {
     getSchoolName(name) {
-      console.log('收到了学校名称',name)
+      console.log('收到了学校名称', name)
     },
-    getStudentName(name){
-      console.log('收到了学生名称',name)
+    getStudentName(name,...param) {
+      console.log('收到了学生名称', name,param)
     }
-  }
+  },
+  mounted() {
+      this.$refs.student.$on('getStudentName', this.getStudentName)
+  },
 }
 </script>
 
